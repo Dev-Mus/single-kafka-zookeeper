@@ -1,0 +1,25 @@
+version: "3"
+services:
+################################################################
+# * zookeeper  
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    container_name: container-zookeeper
+    ports:
+      - ${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}
+
+################################################################
+# * kafka 
+  kafka:
+    image: wurstmeister/kafka:2.11-1.1.0
+    container_name: container-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CREATE_TOPICS: ${TOPIC_NAME}:${TOPIC_PARTITION}:1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_CLIENT_PORT}
+    ports:
+      - ${KAFKA_PORT}:${KAFKA_PORT}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
